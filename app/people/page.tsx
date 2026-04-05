@@ -187,30 +187,31 @@ export default function PersonnelPage() {
                  Add a New Team
                </button>
               </div>
+              </div>
+              
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
             </div>
-            
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
           </div>
         </div>
-       </div>
-     </div>
+      </div>
 
-     <AddPersonModal
-       isOpen={showAddPersonModal}
-       onClose={() => setShowAddPersonModal(false)}
-       onSave={(data) => {
-         console.log('New person added:', data)
-         setShowAddPersonModal(false)
-       }}
-     />
+      <AddPersonModal
+        isOpen={showAddPersonModal}
+        onClose={() => setShowAddPersonModal(false)}
+        onSave={(data) => {
+          console.log('New person added:', data)
+          setShowAddPersonModal(false)
+        }}
+      />
 
-     <AddTeamModal
-       isOpen={showAddTeamModal}
-       onClose={() => setShowAddTeamModal(false)}
-       onSave={(data) => {
-         console.log('New team added:', data)
-         setShowAddTeamModal(false)
-       }}
-     />
-   )
- }
+      <AddTeamModal
+        isOpen={showAddTeamModal}
+        onClose={() => setShowAddTeamModal(false)}
+        onSave={(data) => {
+          console.log('New team added:', data)
+          setShowAddTeamModal(false)
+        }}
+      />
+    </>
+  )
+}
