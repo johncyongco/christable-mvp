@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Save, TestTube, Slack, Globe, Bell, Shield, Database, RefreshCw, CheckCircle, XCircle } from 'lucide-react'
+import { Save, TestTube, MessageSquare, Globe, Bell, Shield, Database, RefreshCw, CheckCircle, XCircle } from 'lucide-react'
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -203,7 +203,7 @@ export default function SettingsPage() {
               <div className="pt-6 border-t border-brand-light">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <Slack className="h-4 w-4 text-brand-teal mr-2" />
+                     <MessageSquare className="h-4 w-4 text-brand-teal mr-2" />
                     <h4 className="text-sm font-medium text-brand-dark">Slack Integration</h4>
                   </div>
                   <div className="flex items-center space-x-2">
