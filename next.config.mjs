@@ -14,10 +14,6 @@ const nextConfig = {
   },
   // For Vercel deployment
   output: 'standalone', // Creates a standalone build for better compatibility
-  // Disable barrel optimization to fix import issues
-  experimental: {
-    optimizePackageImports: [],
-  },
 }
 
 export default nextConfig
