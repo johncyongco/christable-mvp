@@ -92,7 +92,7 @@ export default function VenueMapPage() {
         </div>
         
         <div className="col-span-12 lg:col-span-3">
-          <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
+           <div className="bg-surface-container-lowest rounded-xl p-6 shadow-sm border border-outline-variant/10">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-on-surface font-headline">Zone Management</h3>
               <button className="text-primary text-sm font-bold hover:underline font-headline">Edit All</button>
@@ -107,18 +107,17 @@ export default function VenueMapPage() {
               ))}
             </div>
             
-            <div className="mt-8 pt-8 border-t border-surface-container">
-             <button 
-               onClick={() => setShowAddZoneModal(true)}
-               className="w-full bg-surface-container-low text-on-surface py-3 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-headline"
-             >
+             <div className="mt-8 pt-8 border-t border-surface-container">
+              <button 
+                onClick={() => setShowAddZoneModal(true)}
+                className="w-full bg-surface-container-low text-on-surface py-3 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-headline"
+              >
                 <span className="material-symbols-outlined text-base">add_circle</span>
                 Add a New Zone
               </button>
-             </div>
-           </div>
-         </div>
-       </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {showUploadModal && (
