@@ -1,6 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+import AddScheduleModal from '@/components/modals/AddScheduleModal'
+
 export default function SchedulePage() {
+  const [showAddScheduleModal, setShowAddScheduleModal] = useState(false)
   const timelineEvents = [
     {
       time: '09:00',
@@ -40,7 +44,10 @@ export default function SchedulePage() {
           <h2 className="text-4xl font-extrabold tracking-tight text-on-surface font-headline mb-2">Schedule</h2>
           <p className="text-on-surface-variant font-medium">Monday, October 24th • 12 Active Events</p>
         </div>
-        <button className="flex items-center gap-2 bg-primary px-6 py-3 rounded-full text-on-primary font-bold hover:shadow-xl hover:shadow-primary/20 transition-all active:scale-95">
+        <button 
+          onClick={() => setShowAddScheduleModal(true)}
+          className="flex items-center gap-2 bg-primary px-6 py-3 rounded-full text-on-primary font-bold hover:shadow-xl hover:shadow-primary/20 transition-all active:scale-95"
+        >
           <span className="material-symbols-outlined" style={{ fontVariationSettings: '"FILL" 0' }}>add_circle</span>
           Add Schedule
         </button>
@@ -146,6 +153,15 @@ export default function SchedulePage() {
           </div>
         </div>
       </div>
+
+      <AddScheduleModal
+        isOpen={showAddScheduleModal}
+        onClose={() => setShowAddScheduleModal(false)}
+        onSave={(data) => {
+          console.log('New schedule added:', data)
+          setShowAddScheduleModal(false)
+        }}
+      />
     </div>
   )
 }

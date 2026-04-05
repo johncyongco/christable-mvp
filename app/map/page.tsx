@@ -1,6 +1,12 @@
 'use client'
 
+import { useState } from 'react'
+import UploadFloorplanModal from '@/components/modals/UploadFloorplanModal'
+import AddZoneModal from '@/components/modals/AddZoneModal'
+
 export default function VenueMapPage() {
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [showAddZoneModal, setShowAddZoneModal] = useState(false)
   const zones = [
     {
       name: 'Session Hall',
@@ -26,10 +32,13 @@ export default function VenueMapPage() {
         <div className="col-span-12 lg:col-span-9 space-y-6">
           <div className="flex items-center justify-between bg-surface-container-low p-4 rounded-xl">
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-full text-sm font-semibold transition-transform active:scale-95 shadow-sm font-headline">
-                <span className="material-symbols-outlined text-[20px]">upload_file</span>
-                Upload Floor Plan
-              </button>
+               <button 
+                 onClick={() => setShowUploadModal(true)}
+                 className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-full text-sm font-semibold transition-transform active:scale-95 shadow-sm font-headline hover:bg-primary/90"
+               >
+                 <span className="material-symbols-outlined text-[20px]">upload_file</span>
+                 Upload Floor Plan
+               </button>
               <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
                 <span className="material-symbols-outlined">more_vert</span>
               </button>
@@ -99,14 +108,35 @@ export default function VenueMapPage() {
             </div>
             
             <div className="mt-8 pt-8 border-t border-surface-container">
-              <button className="w-full bg-surface-container-low text-on-surface py-3 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-headline">
-                <span className="material-symbols-outlined text-base">add_circle</span>
-                Add a New Zone
-              </button>
+             <button 
+               onClick={() => setShowAddZoneModal(true)}
+               className="w-full bg-surface-container-low text-on-surface py-3 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-headline"
+             >
+               <span className="material-symbols-outlined text-base">add_circle</span>
+               Add a New Zone
+             </button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
+       </div>
+     </div>
+
+     <UploadFloorplanModal
+       isOpen={showUploadModal}
+       onClose={() => setShowUploadModal(false)}
+       onUpload={(file) => {
+         console.log('Floor plan uploaded:', file)
+         setShowUploadModal(false)
+       }}
+     />
+
+     <AddZoneModal
+       isOpen={showAddZoneModal}
+       onClose={() => setShowAddZoneModal(false)}
+       onSave={(data) => {
+         console.log('New zone added:', data)
+         setShowAddZoneModal(false)
+       }}
+     />
+   )
+ }

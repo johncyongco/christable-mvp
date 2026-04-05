@@ -1,9 +1,106 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import EventModal from '@/components/modals/EventModal'
+import PersonnelDirectoryModal from '@/components/modals/PersonnelDirectoryModal'
+import PersonnelDetailsModal from '@/components/modals/PersonnelDetailsModal'
+
 export default function DashboardPage() {
+  const router = useRouter()
+  const [showActionsDropdown, setShowActionsDropdown] = useState(false)
+  const [showEventModal, setShowEventModal] = useState(false)
+  const [showPersonnelDirectory, setShowPersonnelDirectory] = useState(false)
+  const [showPersonnelDetails, setShowPersonnelDetails] = useState(false)
+  const [selectedPerson, setSelectedPerson] = useState<any>(null)
+  
+  const [eventData, setEventData] = useState({
+    title: 'Summer Youth Camp 2024',
+    description: 'Regional gathering at Pinecrest Reserve. Total of 1,248 participants currently checked in across 12 sectors.',
+    backgroundImage: null as string | null
+  })
+
+  const handleViewSchedule = () => {
+    router.push('/schedule')
+  }
+
+  const handleCreateNewEvent = () => {
+    setShowEventModal(true)
+  }
+
+  const handleEventSave = (data: any) => {
+    setEventData({
+      title: data.title,
+      description: data.description,
+      backgroundImage: data.backgroundImage
+    })
+    setShowEventModal(false)
+  }
+
+  const handleSeeAllDirectory = () => {
+    setShowPersonnelDirectory(true)
+  }
+
+  const handlePersonClick = (person: any) => {
+    setSelectedPerson(person)
+    setShowPersonnelDetails(true)
+  }
+
+  const handlePersonnelSave = (data: any) => {
+    console.log('Personnel updated:', data)
+    setShowPersonnelDetails(false)
+  }
+
+  const personnel = [
+    {
+      id: '1',
+      name: 'Sarah Chen',
+      role: 'Logistics Lead',
+      team: 'Operations',
+      status: 'Available',
+      phone: '+1 (555) 123-4567',
+      email: 'sarah.c@christable.com',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnYUXgF8Mw8wN6BGxRbjrvwC4UloMpCHxYNw0Ev-vChjsuRHfKDDJqv0bl6_UKuZeufpZMcyOw3TsTt4rC9qxOejwpktKVq0Ros5BhtEvBJVe16ClFJEopkcGE7grhuw8wvlVh9Kxpdq_JSjbd-BynelA-5MnTcysQOddfKdRIcOGDAdbxkn7GrCOC5CwdGWlmSl7_q43T4EQAroOpI4NKQDBUKa_hueT4x8qTfdOmtcnvKuNcNJ-_SlYt9TRKr6ahnXH1NlWLoa4'
+    },
+    {
+      id: '2',
+      name: 'Marcus Jensen',
+      role: 'Medical Officer',
+      team: 'Health & Safety',
+      status: 'Busy',
+      phone: '+1 (555) 234-5678',
+      email: 'm.jensen@christable.com',
+      avatar: null
+    },
+    {
+      id: '3',
+      name: 'Alex Thompson',
+      role: 'Security Lead',
+      team: 'Safety',
+      status: 'Available',
+      phone: '+1 (555) 345-6789',
+      email: 'alex.t@christable.com',
+      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCUgTAKAS8k5fAzr3e5Bz47-TKPxavIV1IqkxAbR5urFyrsEyqnbNe6K_zI2KJb8rziqiNY-znmL2xNzq-gqNo_c4p9GbbUsGycmg5vcRAe1TQiO9LRenkmhNXgoYY2oLDnn-__-Ec149Rp-_GNj7nnO3n342PBWqqbWebiuiHTJ0m0diP4Wtnc6gTZ1_sz8j9wz6ucxGVeSGc_zXp_JN81R_nq13KXfm48TMSJyuv0_SlOQMX9aAHV2NhE7DeQbiVpXCFijwjd0WU'
+    }
+  ]
+
   return (
     <>
       {/* Hero Section */}
       <section className="mb-8">
-        <div className="relative overflow-hidden rounded-3xl bg-[#1d1b31] p-10 flex flex-col md:flex-row items-center justify-between gap-8 min-h-[320px]">
+        <div 
+          className="relative overflow-hidden rounded-3xl p-10 flex flex-col md:flex-row items-center justify-between gap-8 min-h-[320px]"
+          style={eventData.backgroundImage ? { 
+            backgroundImage: `url(${eventData.backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          } : { backgroundColor: '#1d1b31' }}
+        >
+          {/* Overlay for background image */}
+          {eventData.backgroundImage && (
+            <div className="absolute inset-0 bg-black/50"></div>
+          )}
+          
           {/* Abstract Background Ornament */}
           <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
             <div className="absolute inset-0 bg-gradient-to-l from-primary to-transparent"></div>
@@ -16,16 +113,56 @@ export default function DashboardPage() {
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
               Event
             </div>
-            <h2 className="text-5xl font-black text-white mb-4 tracking-tight">Summer Youth Camp 2024</h2>
+            <h2 className="text-5xl font-black text-white mb-4 tracking-tight">{eventData.title}</h2>
             <p className="text-indigo-100 text-lg font-medium mb-8 max-w-lg leading-relaxed">
-              Regional gathering at Pinecrest Reserve. Total of 1,248 participants currently checked in across 12 sectors.
+              {eventData.description}
             </p>
             <div className="flex flex-wrap gap-4">
-              <button className="bg-primary text-white px-8 py-3.5 rounded-full font-bold shadow-xl shadow-primary/40 hover:scale-105 transition-transform flex items-center gap-2">
-                <span>Actions</span>
-                <span className="material-symbols-outlined text-lg">keyboard_arrow_down</span>
-              </button>
-              <button className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-8 py-3.5 rounded-full font-bold hover:bg-white/20 transition-all flex items-center gap-2">
+              <div className="relative">
+                <button 
+                  onClick={() => setShowActionsDropdown(!showActionsDropdown)}
+                  className="bg-primary text-white px-8 py-3.5 rounded-full font-bold shadow-xl shadow-primary/40 hover:scale-105 transition-transform flex items-center gap-2"
+                >
+                  <span>Actions</span>
+                  <span className="material-symbols-outlined text-lg">keyboard_arrow_down</span>
+                </button>
+                
+                {showActionsDropdown && (
+                  <div className="absolute top-full left-0 mt-2 w-56 bg-surface-container-lowest rounded-xl shadow-lg border border-outline-variant/15 z-50">
+                    <div className="py-2">
+                      <button 
+                        onClick={handleCreateNewEvent}
+                        className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2"
+                      >
+                        <span className="material-symbols-outlined text-base">add</span>
+                        Create New Event
+                      </button>
+                      <button className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base">download</span>
+                        Export Data
+                      </button>
+                      <button className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base">print</span>
+                        Print Report
+                      </button>
+                      <button className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base">settings</span>
+                        Event Settings
+                      </button>
+                      <div className="border-t border-surface-container my-1"></div>
+                      <button className="w-full text-left px-4 py-2 text-sm text-error hover:bg-error/10 transition-colors flex items-center gap-2">
+                        <span className="material-symbols-outlined text-base">power_settings_new</span>
+                        End Event
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <button 
+                onClick={handleViewSchedule}
+                className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-8 py-3.5 rounded-full font-bold hover:bg-white/20 transition-all flex items-center gap-2"
+              >
                 <span className="material-symbols-outlined">calendar_today</span>
                 View Schedule
               </button>
@@ -192,72 +329,116 @@ export default function DashboardPage() {
               <h3 className="text-xl font-extrabold text-on-surface mb-1">Active Personnel</h3>
               <p className="text-sm text-on-surface-variant">3 teams currently deployed on ground</p>
             </div>
-            <button className="text-sm font-bold text-primary flex items-center gap-1">
-              View All Directory
-              <span className="material-symbols-outlined text-lg">chevron_right</span>
-            </button>
+             <button 
+               onClick={handleSeeAllDirectory}
+               className="text-sm font-bold text-primary flex items-center gap-1 hover:text-primary/80 transition-colors"
+             >
+               See All Directory
+               <span className="material-symbols-outlined text-lg">chevron_right</span>
+             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Personnel Card 1 */}
-            <div className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors">
-              <img 
-                alt="Alex Thompson" 
-                className="w-14 h-14 rounded-xl object-cover" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUgTAKAS8k5fAzr3e5Bz47-TKPxavIV1IqkxAbR5urFyrsEyqnbNe6K_zI2KJb8rziqiNY-znmL2xNzq-gqNo_c4p9GbbUsGycmg5vcRAe1TQiO9LRenkmhNXgoYY2oLDnn-__-Ec149Rp-_GNj7nnO3n342PBWqqbWebiuiHTJ0m0diP4Wtnc6gTZ1_sz8j9wz6ucxGVeSGc_zXp_JN81R_nq13KXfm48TMSJyuv0_SlOQMX9aAHV2NhE7DeQbiVpXCFijwjd0WU"
-              />
-              <div className="flex-1">
-                <p className="font-bold text-on-surface">Alex Thompson</p>
-                <p className="text-xs text-on-surface-variant mb-2">Logistics Lead</p>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-secondary"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Available</span>
-                </div>
-              </div>
-              <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-400">
-                <span className="material-symbols-outlined text-sm">chat_bubble</span>
-              </button>
-            </div>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             {/* Personnel Card 1 */}
+             <div 
+               onClick={() => handlePersonClick(personnel[0])}
+               className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer"
+             >
+               <img 
+                 alt="Sarah Chen" 
+                 className="w-14 h-14 rounded-xl object-cover" 
+                 src={personnel[0].avatar}
+               />
+               <div className="flex-1">
+                 <p className="font-bold text-on-surface">{personnel[0].name}</p>
+                 <p className="text-xs text-on-surface-variant mb-2">{personnel[0].role}</p>
+                 <div className="flex items-center gap-2">
+                   <span className={`w-2 h-2 rounded-full ${
+                     personnel[0].status === 'Available' ? 'bg-success' :
+                     personnel[0].status === 'Busy' ? 'bg-warning' : 'bg-outline'
+                   }`}></span>
+                   <span className="text-[10px] font-bold text-slate-500 uppercase">{personnel[0].status}</span>
+                 </div>
+               </div>
+               <button className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                 <span className="material-symbols-outlined text-sm">chat_bubble</span>
+               </button>
+             </div>
 
-            {/* Personnel Card 2 */}
-            <div className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors">
-              <img 
-                alt="Sarah Jenkins" 
-                className="w-14 h-14 rounded-xl object-cover" 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAk4QTq4CMiUgloVXr8mRBY8qliU7DEbDSkaKJM8v6KkLhbgk5WQm_WmRcSCwBrVMzrwJl4LIGSjEX5O1-cLWp9lbGBGXyABzRxeVXVeeiscmJYM12rJnOLYMGoB2CjWhGA2gqkGbX_0_dOd1Ceq_sbLoY5dZwlAQH5M9RLjOH8VMYrqYjvcB3xgjygYgA2AYFZUM_EvFqyE71tDz1wNOFdcvDZt1EU2Mq3rvE2hr-0II3uhTkG77Ho09wFr49SstlfnpZX-CzJaE8"
-              />
-              <div className="flex-1">
-                <p className="font-bold text-on-surface">Sarah Jenkins</p>
-                <p className="text-xs text-on-surface-variant mb-2">Medical Officer</p>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">On Duty</span>
-                </div>
-              </div>
-              <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-400">
-                <span className="material-symbols-outlined text-sm">chat_bubble</span>
-              </button>
-            </div>
+             {/* Personnel Card 2 */}
+             <div 
+               onClick={() => handlePersonClick(personnel[1])}
+               className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer"
+             >
+               <div className="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface">
+                 <span className="text-2xl font-bold">{personnel[1].name.charAt(0)}</span>
+               </div>
+               <div className="flex-1">
+                 <p className="font-bold text-on-surface">{personnel[1].name}</p>
+                 <p className="text-xs text-on-surface-variant mb-2">{personnel[1].role}</p>
+                 <div className="flex items-center gap-2">
+                   <span className={`w-2 h-2 rounded-full ${
+                     personnel[1].status === 'Available' ? 'bg-success' :
+                     personnel[1].status === 'Busy' ? 'bg-warning' : 'bg-outline'
+                   }`}></span>
+                   <span className="text-[10px] font-bold text-slate-500 uppercase">{personnel[1].status}</span>
+                 </div>
+               </div>
+               <button className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                 <span className="material-symbols-outlined text-sm">chat_bubble</span>
+               </button>
+             </div>
 
-            {/* Personnel Card 3 */}
-            <div className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors">
-              <div className="w-14 h-14 rounded-xl bg-primary flex items-center justify-center text-white">
-                <span className="material-symbols-outlined text-3xl">security</span>
-              </div>
-              <div className="flex-1">
-                <p className="font-bold text-on-surface">Safety Crew Alpha</p>
-                <p className="text-xs text-on-surface-variant mb-2">8 Members Deployed</p>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-tertiary"></span>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase">Roaming</span>
-                </div>
-              </div>
-              <button className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-slate-400">
-                <span className="material-symbols-outlined text-sm">radio</span>
-              </button>
-            </div>
-          </div>
+             {/* Personnel Card 3 */}
+             <div 
+               onClick={() => handlePersonClick(personnel[2])}
+               className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer"
+             >
+               <img 
+                 alt="Alex Thompson" 
+                 className="w-14 h-14 rounded-xl object-cover" 
+                 src={personnel[2].avatar}
+               />
+               <div className="flex-1">
+                 <p className="font-bold text-on-surface">{personnel[2].name}</p>
+                 <p className="text-xs text-on-surface-variant mb-2">{personnel[2].role}</p>
+                 <div className="flex items-center gap-2">
+                   <span className={`w-2 h-2 rounded-full ${
+                     personnel[2].status === 'Available' ? 'bg-success' :
+                     personnel[2].status === 'Busy' ? 'bg-warning' : 'bg-outline'
+                   }`}></span>
+                   <span className="text-[10px] font-bold text-slate-500 uppercase">{personnel[2].status}</span>
+                 </div>
+               </div>
+               <button className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                 <span className="material-symbols-outlined text-sm">chat_bubble</span>
+               </button>
+             </div>
+           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <EventModal
+        isOpen={showEventModal}
+        onClose={() => setShowEventModal(false)}
+        onSave={handleEventSave}
+        initialData={eventData}
+      />
+
+      <PersonnelDirectoryModal
+        isOpen={showPersonnelDirectory}
+        onClose={() => setShowPersonnelDirectory(false)}
+        onPersonClick={handlePersonClick}
+      />
+
+      {selectedPerson && (
+        <PersonnelDetailsModal
+          isOpen={showPersonnelDetails}
+          onClose={() => setShowPersonnelDetails(false)}
+          onSave={handlePersonnelSave}
+          personnel={selectedPerson}
+        />
+      )}
     </>
   )
 }

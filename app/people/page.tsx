@@ -1,6 +1,12 @@
 'use client'
 
+import { useState } from 'react'
+import AddPersonModal from '@/components/modals/AddPersonModal'
+import AddTeamModal from '@/components/modals/AddTeamModal'
+
 export default function PersonnelPage() {
+  const [showAddPersonModal, setShowAddPersonModal] = useState(false)
+  const [showAddTeamModal, setShowAddTeamModal] = useState(false)
   const personnel = [
     {
       name: 'Sarah Chen',
@@ -84,13 +90,13 @@ export default function PersonnelPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse font-body">
                 <thead>
-                  <tr className="text-on-surface-variant text-[11px] uppercase tracking-widest bg-surface-container-low/50">
-                    <th className="px-6 py-4 font-bold">Name</th>
-                    <th className="px-6 py-4 font-bold">Role</th>
-                    <th className="px-6 py-4 font-bold">Department</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
-                    <th className="px-6 py-4 font-bold text-right">Actions</th>
-                  </tr>
+                   <tr className="text-on-surface-variant text-[11px] uppercase tracking-widest bg-surface-container-low/50">
+                     <th className="px-6 py-4 font-bold">Name</th>
+                     <th className="px-6 py-4 font-bold">Role</th>
+                     <th className="px-6 py-4 font-bold">Team</th>
+                     <th className="px-6 py-4 font-bold">Status</th>
+                     <th className="px-6 py-4 font-bold text-right">Actions</th>
+                   </tr>
                 </thead>
                 <tbody className="divide-y divide-surface-container">
                   {personnel.map((person, index) => (
@@ -140,10 +146,13 @@ export default function PersonnelPage() {
         </div>
         
         <div className="col-span-12 lg:col-span-4 space-y-6">
-          <button className="w-full bg-surface-container-low text-on-surface py-3.5 rounded-xl border border-outline-variant/30 text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 shadow-sm font-body">
-            <span className="material-symbols-outlined text-xl">person_add</span>
-            Add Person
-          </button>
+           <button 
+             onClick={() => setShowAddPersonModal(true)}
+             className="w-full bg-surface-container-low text-on-surface py-3.5 rounded-xl border border-outline-variant/30 text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 shadow-sm font-body"
+           >
+             <span className="material-symbols-outlined text-xl">person_add</span>
+             Add Person
+           </button>
           
           <div className="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 shadow-sm relative overflow-hidden">
             <div className="relative z-10">
@@ -170,17 +179,38 @@ export default function PersonnelPage() {
               </div>
               
               <div className="mt-8 pt-8 border-t border-surface-container">
-                <button className="w-full bg-surface-container-low text-on-surface py-3.5 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-body">
-                  <span className="material-symbols-outlined text-lg">group_add</span>
-                  Add a New Team
-                </button>
+               <button 
+                 onClick={() => setShowAddTeamModal(true)}
+                 className="w-full bg-surface-container-low text-on-surface py-3.5 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-body"
+               >
+                 <span className="material-symbols-outlined text-lg">group_add</span>
+                 Add a New Team
+               </button>
               </div>
             </div>
             
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
           </div>
         </div>
-      </div>
-    </div>
-  )
-}
+       </div>
+     </div>
+
+     <AddPersonModal
+       isOpen={showAddPersonModal}
+       onClose={() => setShowAddPersonModal(false)}
+       onSave={(data) => {
+         console.log('New person added:', data)
+         setShowAddPersonModal(false)
+       }}
+     />
+
+     <AddTeamModal
+       isOpen={showAddTeamModal}
+       onClose={() => setShowAddTeamModal(false)}
+       onSave={(data) => {
+         console.log('New team added:', data)
+         setShowAddTeamModal(false)
+       }}
+     />
+   )
+ }

@@ -18,26 +18,30 @@ export default function Sidebar() {
   const { isCollapsed, setIsCollapsed } = useSidebar()
 
   return (
-    <aside className="h-screen w-64 fixed left-0 top-0 bg-white flex flex-col p-6 z-50">
+    <aside className={`h-screen fixed left-0 top-0 bg-white flex flex-col p-6 z-50 transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="material-symbols-outlined text-white text-xl" style={{ fontVariationSettings: '"FILL" 1' }}>security</span>
           </div>
-          <h1 className="text-lg font-extrabold text-slate-900 leading-tight">Christable</h1>
+          {!isCollapsed && <h1 className="text-lg font-extrabold text-slate-900 leading-tight">Christable</h1>}
         </div>
-        <button 
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-slate-400 hover:text-slate-600"
-        >
-          <span className="material-symbols-outlined">menu_open</span>
-        </button>
+        {!isCollapsed && (
+          <button 
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="text-slate-400 hover:text-slate-600"
+          >
+            <span className="material-symbols-outlined">chevron_left</span>
+          </button>
+        )}
       </div>
       
-      <button className="w-full py-3.5 px-4 bg-primary text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 mb-8 transition-transform hover:scale-[1.02] active:scale-[0.98]">
-        <span className="material-symbols-outlined text-lg">add_circle</span>
-        Create New Event
-      </button>
+      {!isCollapsed && (
+        <button className="w-full py-3.5 px-4 bg-primary text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-primary/20 mb-8 transition-transform hover:scale-[1.02] active:scale-[0.98]">
+          <span className="material-symbols-outlined text-lg">add_circle</span>
+          Create New Event
+        </button>
+      )}
       
       <nav className="flex-1 space-y-1">
         {navigation.map((item) => {
@@ -54,7 +58,9 @@ export default function Sidebar() {
                   ? 'text-primary bg-primary/5' 
                   : 'text-slate-500 hover:bg-slate-50'
                 }
+                ${isCollapsed ? 'justify-center' : ''}
               `}
+              title={isCollapsed ? item.name : ''}
             >
               <span 
                 className="material-symbols-outlined" 
@@ -62,11 +68,20 @@ export default function Sidebar() {
               >
                 {item.icon}
               </span>
-              <span>{item.name}</span>
+              {!isCollapsed && <span>{item.name}</span>}
             </Link>
           )
         })}
       </nav>
+      
+      {isCollapsed && (
+        <button 
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="mt-8 text-slate-400 hover:text-slate-600 flex justify-center"
+        >
+          <span className="material-symbols-outlined">chevron_right</span>
+        </button>
+      )}
     </aside>
   )
 }
