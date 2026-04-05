@@ -1,338 +1,186 @@
 'use client'
 
-import { useState } from 'react'
-import { User, Phone, Mail, MapPin, MoreVertical, Plus, Users, Bell } from 'lucide-react'
-import PersonForm from '@/components/forms/PersonForm'
-
-const people = [
-  {
-    id: '1',
-    name: 'Sarah Johnson',
-    role: 'Worship Leader',
-    status: 'active',
-    phone: '+1 (555) 123-4567',
-    email: 'sarah@example.com',
-    team: 'Worship Team',
-    zone: 'Session Hall',
-    lastPing: '10 min ago',
-    imageUrl: null,
-    slackChannelId: 'C1234567890',
-    slackUserId: 'U1234567890',
-  },
-  {
-    id: '2',
-    name: 'Michael Chen',
-    role: 'Kitchen Staff',
-    status: 'active',
-    phone: '+1 (555) 234-5678',
-    email: 'michael@example.com',
-    team: 'Kitchen Team',
-    zone: 'Kitchen',
-    lastPing: '15 min ago',
-    imageUrl: null,
-    slackChannelId: 'C2345678901',
-    slackUserId: 'U2345678901',
-  },
-  {
-    id: '3',
-    name: 'David Wilson',
-    role: 'First Aid',
-    status: 'needs_attention',
-    phone: '+1 (555) 345-6789',
-    email: 'david@example.com',
-    team: 'Medical Team',
-    zone: 'First Aid Station',
-    lastPing: '5 min ago',
-    imageUrl: null,
-    slackChannelId: 'C3456789012',
-    slackUserId: 'U3456789012',
-  },
-  {
-    id: '4',
-    name: 'Maria Garcia',
-    role: 'Registration',
-    status: 'idle',
-    phone: '+1 (555) 456-7890',
-    email: 'maria@example.com',
-    team: 'Registration Team',
-    zone: 'Registration Desk',
-    lastPing: '30 min ago',
-    imageUrl: null,
-    slackChannelId: 'C4567890123',
-    slackUserId: 'U4567890123',
-  },
-]
-
-export default function PeoplePage() {
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
-  const [selectedPerson, setSelectedPerson] = useState<any>(null)
-  const [isEditMode, setIsEditMode] = useState(false)
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-brand-teal/20 text-brand-teal'
-      case 'idle': return 'bg-brand-gold/20 text-brand-gold'
-      case 'needs_attention': return 'bg-brand-coral/20 text-brand-coral'
-      default: return 'bg-brand-light text-brand-dark'
+export default function PersonnelPage() {
+  const personnel = [
+    {
+      name: 'Sarah Chen',
+      email: 'sarah.c@christable.com',
+      role: 'Logistics Lead',
+      department: 'Operations',
+      status: 'On Duty',
+      statusColor: 'bg-secondary',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnYUXgF8Mw8wN6BGxRbjrvwC4UloMpCHxYNw0Ev-vChjsuRHfKDDJqv0bl6_UKuZeufpZMcyOw3TsTt4rC9qxOejwpktKVq0Ros5BhtEvBJVe16ClFJEopkcGE7grhuw8wvlVh9Kxpdq_JSjbd-BynelA-5MnTcysQOddfKdRIcOGDAdbxkn7GrCOC5CwdGWlmSl7_q43T4EQAroOpI4NKQDBUKa_hueT4x8qTfdOmtcnvKuNcNJ-_SlYt9TRKr6ahnXH1NlWLoa4'
+    },
+    {
+      name: 'Marcus Jensen',
+      email: 'm.jensen@christable.com',
+      role: 'Medical Officer',
+      department: 'Health & Safety',
+      status: 'Roaming',
+      statusColor: 'bg-primary',
+      image: null
+    },
+    {
+      name: 'David Miller',
+      email: 'd.miller@christable.com',
+      role: 'Security',
+      department: 'Perimeter',
+      status: 'Available',
+      statusColor: 'bg-outline-variant',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAdqF5mVj3FpwMoK3p4SYwowFijpbdS4dQ5ddd7s2UJELXpohJbgqKh2idfdhuIzva0bQA9NyWCbKLvP1vZNTPnj0OWiNonl7vtDBMADpWpeCNpY3DLIhCjxzRZcToU3KmRARgnz1MNfuMwW8OfmaKft4_0kwRYyzASc-05C-StKurJ1kzyuVPcLjYsk81p0115huDnK_dFMybWYdUC_d4VDAD5fdKgSemw8ioWb3aqC22ChPRUunVT1_zELg-hyN4wXg52H5AflAI'
+    },
+    {
+      name: 'James Wilson',
+      email: 'j.wilson@christable.com',
+      role: 'Logistics Lead',
+      department: 'Supply Chain',
+      status: 'On Duty',
+      statusColor: 'bg-secondary',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCbERxoHAFOE8fSr1NKUJwtsQMcdEL5cU7n4zpew3d1LvaHinx4ZZOn7M1pFOlOtuYeWB8g7mnFSVrLb2Dy0H38bIPgUyAux7yQzwuCH4pcPI0ZL6poTh5807NPEhltUSWaLGhzGd3vyNk1DsTFrOeW3PUUMCQ8N22UBgxn1lpTX8L_Gtnu4Qibbr8GbjznTUX4HtJaIu4hIxazq7v_iIUkW-GXBTbprZsYtcz54UEG3XzPn4RlVx-S5zlrcbrO0IaZmEWQHjtlqCE'
     }
-  }
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'Active'
-      case 'idle': return 'Idle'
-      case 'needs_attention': return 'Needs Attention'
-      default: return 'Unknown'
-    }
-  }
-
-  const activeCount = people.filter(p => p.status === 'active').length
-  const needsAttentionCount = people.filter(p => p.status === 'needs_attention').length
-  const idleCount = people.filter(p => p.status === 'idle').length
-
-  const handleEditPerson = (person: any) => {
-    setSelectedPerson(person)
-    setIsEditMode(true)
-    setIsAddModalOpen(true)
-  }
-
-  const handleAddPerson = () => {
-    setSelectedPerson(null)
-    setIsEditMode(false)
-    setIsAddModalOpen(true)
-  }
-
-  const handleCloseModal = () => {
-    setIsAddModalOpen(false)
-    setSelectedPerson(null)
-    setIsEditMode(false)
-  }
-
-  // Sample teams and zones data (in production, this would come from an API)
-  const teams = [
-    { id: '1', name: 'Worship Team' },
-    { id: '2', name: 'Kitchen Team' },
-    { id: '3', name: 'Medical Team' },
-    { id: '4', name: 'Registration Team' },
-    { id: '5', name: 'Security Team' },
-    { id: '6', name: 'Technical Team' },
   ]
 
-  const zones = [
-    { id: '1', name: 'Session Hall' },
-    { id: '2', name: 'Kitchen' },
-    { id: '3', name: 'First Aid Station' },
-    { id: '4', name: 'Registration Desk' },
-    { id: '5', name: 'Activity Hall' },
-    { id: '6', name: 'Conference Room' },
-    { id: '7', name: 'Parking Lot' },
+  const teams = [
+    {
+      name: 'Emergency Response',
+      members: '12 Members',
+      location: 'Zone A',
+      icon: 'medical_services',
+      color: 'bg-primary text-white'
+    },
+    {
+      name: 'Floor Security',
+      members: '34 Members',
+      location: 'Main Hall',
+      icon: 'security',
+      color: 'bg-primary/10 text-primary'
+    },
+    {
+      name: 'Guest Concierge',
+      members: '08 Members',
+      location: 'Entrance',
+      icon: 'support_agent',
+      color: 'bg-secondary-fixed text-on-secondary-container'
+    }
   ]
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-brand-dark">People Management</h1>
-          <p className="mt-1 text-sm text-brand-light">
-            Manage all people records, assign teams and zones, track status, and send pings
-          </p>
-        </div>
-        <button 
-          onClick={handleAddPerson}
-          className="btn btn-primary flex items-center"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add Person
-        </button>
+    <div className="p-8">
+      <div className="mb-8">
+        <h2 className="text-4xl font-extrabold tracking-tight text-on-surface mb-2 font-headline">Personnel</h2>
+        <p className="text-on-surface-variant font-body text-lg">Manage staff assignments, team distribution, and real-time operational status.</p>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="card">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-brand-dark">All People ({people.length})</h3>
+      
+      <div className="grid grid-cols-12 gap-8">
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/15 overflow-hidden shadow-sm">
+            <div className="p-6 flex items-center justify-between bg-surface-container-low/30">
+              <h3 className="text-lg font-bold font-headline">Active Directory</h3>
+              <button className="text-primary text-sm font-semibold flex items-center gap-1 hover:underline">
+                <span className="material-symbols-outlined text-base">filter_list</span> Filter List
+              </button>
             </div>
-            <div className="card-body">
-              <div className="table-container">
-                <table className="table">
-                  <thead className="table-header">
-                    <tr>
-                      <th scope="col" className="table-header-cell">Name</th>
-                      <th scope="col" className="table-header-cell">Role</th>
-                      <th scope="col" className="table-header-cell">Status</th>
-                      <th scope="col" className="table-header-cell">Team & Zone</th>
-                      <th scope="col" className="table-header-cell">Last Ping</th>
-                      <th scope="col" className="table-header-cell">Actions</th>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse font-body">
+                <thead>
+                  <tr className="text-on-surface-variant text-[11px] uppercase tracking-widest bg-surface-container-low/50">
+                    <th className="px-6 py-4 font-bold">Name</th>
+                    <th className="px-6 py-4 font-bold">Role</th>
+                    <th className="px-6 py-4 font-bold">Department</th>
+                    <th className="px-6 py-4 font-bold">Status</th>
+                    <th className="px-6 py-4 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-surface-container">
+                  {personnel.map((person, index) => (
+                    <tr key={index} className="hover:bg-surface-container-low transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          {person.image ? (
+                            <img alt={person.name} className="w-9 h-9 rounded-full object-cover" src={person.image} />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs uppercase">
+                              {person.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                          )}
+                          <div>
+                            <p className="font-bold text-sm text-on-surface">{person.name}</p>
+                            <p className="text-xs text-on-surface-variant">{person.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm font-medium">{person.role}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-on-surface-variant">{person.department}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className={`w-2 h-2 rounded-full ${person.statusColor}`}></span>
+                          <span className="text-xs font-semibold uppercase">{person.status}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button className="p-1 rounded-lg hover:bg-surface-container-highest transition-colors opacity-0 group-hover:opacity-100">
+                          <span className="material-symbols-outlined text-xl">more_vert</span>
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {people.map((person) => (
-                      <tr key={person.id} className="hover:bg-brand-light">
-                        <td className="table-cell py-4 pl-4 pr-3">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10">
-                              {person.imageUrl ? (
-                                <img className="h-10 w-10 rounded-full" src={person.imageUrl} alt="" />
-                              ) : (
-                                <div className="h-10 w-10 rounded-full bg-brand-light flex items-center justify-center">
-                                  <User className="h-5 w-5 text-brand-light" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="ml-4">
-                              <div className="font-medium text-brand-dark">{person.name}</div>
-                              <div className="flex items-center space-x-2 text-sm text-brand-light">
-                                <span className="flex items-center">
-                                  <Phone className="mr-1 h-3 w-3" />
-                                  {person.phone}
-                                </span>
-                                <span className="flex items-center">
-                                  <Mail className="mr-1 h-3 w-3" />
-                                  {person.email}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="table-cell">
-                          <div className="text-sm text-brand-dark">{person.role}</div>
-                        </td>
-                        <td className="table-cell">
-                          <span className={`badge ${getStatusColor(person.status)}`}>
-                            {getStatusText(person.status)}
-                          </span>
-                        </td>
-                        <td className="table-cell">
-                          <div className="text-sm">
-                            <div className="font-medium text-brand-dark">{person.team}</div>
-                            <div className="flex items-center text-brand-light">
-                              <MapPin className="mr-1 h-3 w-3" />
-                              {person.zone}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="table-cell">
-                          <div className="text-sm text-brand-dark">{person.lastPing}</div>
-                        </td>
-                        <td className="table-cell">
-                          <div className="flex items-center space-x-2">
-                            <button
-                              title="Ping"
-                              className="p-1.5 text-brand-light hover:text-brand-teal hover:bg-brand-teal/10 rounded"
-                              onClick={() => alert(`Ping sent to ${person.name}`)}
-                            >
-                              <Bell className="h-4 w-4" />
-                            </button>
-                            <button
-                              title="More"
-                              className="p-1.5 text-brand-light hover:text-brand-dark hover:bg-brand-light rounded"
-                              onClick={() => handleEditPerson(person)}
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="p-4 border-t border-surface-container bg-surface-container-low/20 flex justify-center">
+              <button className="text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors">View All Personnel</button>
             </div>
           </div>
         </div>
         
-        <div>
-          <div className="card">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-brand-dark">Quick Stats</h3>
-            </div>
-            <div className="card-body">
-              <dl className="grid grid-cols-1 gap-4">
-                <div className="bg-brand-light rounded-lg p-4">
-                  <dt className="text-sm font-medium text-brand-light">Total People</dt>
-                  <dd className="mt-1 text-3xl font-semibold text-brand-dark">{people.length}</dd>
-                </div>
-                <div className="bg-brand-teal/10 rounded-lg p-4">
-                  <dt className="text-sm font-medium text-brand-light">Active</dt>
-                  <dd className="mt-1 text-3xl font-semibold text-brand-dark">{activeCount}</dd>
-                </div>
-                <div className="bg-brand-gold/10 rounded-lg p-4">
-                  <dt className="text-sm font-medium text-brand-light">Idle</dt>
-                  <dd className="mt-1 text-3xl font-semibold text-brand-dark">{idleCount}</dd>
-                </div>
-                <div className="bg-brand-coral/10 rounded-lg p-4">
-                  <dt className="text-sm font-medium text-brand-light">Needs Attention</dt>
-                  <dd className="mt-1 text-3xl font-semibold text-brand-dark">{needsAttentionCount}</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
-
-          <div className="card mt-6">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-brand-dark">Add New Person</h3>
-            </div>
-            <div className="card-body">
-              <p className="text-sm text-brand-light mb-4">
-                Add a new person to the system to start tracking their status and sending pings.
-              </p>
-              <button 
-                onClick={handleAddPerson}
-                className="w-full btn btn-primary flex items-center justify-center"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Person
-              </button>
-            </div>
-          </div>
-
-          <div className="card mt-6">
-            <div className="card-header">
-              <h3 className="text-lg font-medium text-brand-dark">Team Distribution</h3>
-            </div>
-            <div className="card-body">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 text-brand-teal mr-2" />
-                    <span className="text-sm text-brand-dark">Worship Team</span>
+        <div className="col-span-12 lg:col-span-4 space-y-6">
+          <button className="w-full bg-surface-container-low text-on-surface py-3.5 rounded-xl border border-outline-variant/30 text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 shadow-sm font-body">
+            <span className="material-symbols-outlined text-xl">person_add</span>
+            Add Person
+          </button>
+          
+          <div className="bg-surface-container-lowest p-8 rounded-xl border border-outline-variant/15 shadow-sm relative overflow-hidden">
+            <div className="relative z-10">
+              <h3 className="text-xl font-bold font-headline mb-1">Teams</h3>
+              <p className="text-sm text-on-surface-variant mb-8 font-body">Active team coordination and deployment.</p>
+              
+              <div className="space-y-6 font-body">
+                {teams.map((team, index) => (
+                  <div key={index} className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-xl ${team.color} flex items-center justify-center shadow-sm`}>
+                        <span className="material-symbols-outlined">{team.icon}</span>
+                      </div>
+                      <div>
+                        <p className="font-bold text-on-surface">{team.name}</p>
+                        <p className="text-xs text-on-surface-variant">{team.members} • {team.location}</p>
+                      </div>
+                    </div>
+                    <button className="p-1 text-slate-400 hover:bg-slate-100 rounded-lg">
+                      <span className="material-symbols-outlined">more_vert</span>
+                    </button>
                   </div>
-                  <span className="text-sm font-medium text-brand-dark">8 members</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 text-brand-teal mr-2" />
-                    <span className="text-sm text-brand-dark">Kitchen Team</span>
-                  </div>
-                  <span className="text-sm font-medium text-brand-dark">4 members</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 text-brand-teal mr-2" />
-                    <span className="text-sm text-brand-dark">Medical Team</span>
-                  </div>
-                  <span className="text-sm font-medium text-brand-dark">2 members</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Users className="h-4 w-4 text-brand-teal mr-2" />
-                    <span className="text-sm text-brand-dark">Registration Team</span>
-                  </div>
-                  <span className="text-sm font-medium text-brand-dark">3 members</span>
-                </div>
+                ))}
+              </div>
+              
+              <div className="mt-8 pt-8 border-t border-surface-container">
+                <button className="w-full bg-surface-container-low text-on-surface py-3.5 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-body">
+                  <span className="material-symbols-outlined text-lg">group_add</span>
+                  Add a New Team
+                </button>
               </div>
             </div>
+            
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
           </div>
         </div>
       </div>
-
-      <PersonForm
-        isOpen={isAddModalOpen}
-        onClose={handleCloseModal}
-        person={selectedPerson}
-        teams={teams}
-        zones={zones}
-      />
     </div>
   )
 }
