@@ -358,14 +358,16 @@ export default function SettingsPage() {
                 Contact Support
               </button>
             </div>
-          </section>
-        </div>
-      </div>
+           </section>
+         </div>
+       </div>
 
-      <ContactSupportModal
-        isOpen={showContactSupport}
-        onClose={() => setShowContactSupport(false)}
-      />
-    </div>
-  )
-}
+       {showContactSupport && (
+         <ContactSupportModal
+           isOpen={showContactSupport}
+           onClose={() => setShowContactSupport(false)}
+         />
+       )}
+     </div>
+   )
+ }

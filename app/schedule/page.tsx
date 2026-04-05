@@ -150,18 +150,20 @@ export default function SchedulePage() {
               <p className="text-xs font-black text-primary">14:05</p>
             </div>
             <div className="flex-1 h-[2px] bg-primary relative before:content-[''] before:absolute before:left-[-6px] before:top-[-4px] before:w-2.5 before:h-2.5 before:bg-primary before:rounded-full after:content-['NOW'] after:absolute after:right-0 after:top-[-20px] after:text-[9px] after:font-black after:text-primary"></div>
-          </div>
-        </div>
-      </div>
+           </div>
+         </div>
+       </div>
 
-      <AddScheduleModal
-        isOpen={showAddScheduleModal}
-        onClose={() => setShowAddScheduleModal(false)}
-        onSave={(data) => {
-          console.log('New schedule added:', data)
-          setShowAddScheduleModal(false)
-        }}
-      />
-    </div>
-  )
-}
+       {showAddScheduleModal && (
+         <AddScheduleModal
+           isOpen={showAddScheduleModal}
+           onClose={() => setShowAddScheduleModal(false)}
+           onSave={(data) => {
+             console.log('New schedule added:', data)
+             setShowAddScheduleModal(false)
+           }}
+         />
+       )}
+     </div>
+   )
+ }

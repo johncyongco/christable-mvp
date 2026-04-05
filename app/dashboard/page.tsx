@@ -417,21 +417,25 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Modals */}
-      <EventModal
-        isOpen={showEventModal}
-        onClose={() => setShowEventModal(false)}
-        onSave={handleEventSave}
-        initialData={eventData}
-      />
+       {/* Modals */}
+      {showEventModal && (
+        <EventModal
+          isOpen={showEventModal}
+          onClose={() => setShowEventModal(false)}
+          onSave={handleEventSave}
+          initialData={eventData}
+        />
+      )}
 
-      <PersonnelDirectoryModal
-        isOpen={showPersonnelDirectory}
-        onClose={() => setShowPersonnelDirectory(false)}
-        onPersonClick={handlePersonClick}
-      />
+      {showPersonnelDirectory && (
+        <PersonnelDirectoryModal
+          isOpen={showPersonnelDirectory}
+          onClose={() => setShowPersonnelDirectory(false)}
+          onPersonClick={handlePersonClick}
+        />
+      )}
 
-      {selectedPerson && (
+      {selectedPerson && showPersonnelDetails && (
         <PersonnelDetailsModal
           isOpen={showPersonnelDetails}
           onClose={() => setShowPersonnelDetails(false)}

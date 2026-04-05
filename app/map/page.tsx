@@ -112,31 +112,35 @@ export default function VenueMapPage() {
                onClick={() => setShowAddZoneModal(true)}
                className="w-full bg-surface-container-low text-on-surface py-3 rounded-full text-sm font-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 font-headline"
              >
-               <span className="material-symbols-outlined text-base">add_circle</span>
-               Add a New Zone
-             </button>
-            </div>
-          </div>
-        </div>
+                <span className="material-symbols-outlined text-base">add_circle</span>
+                Add a New Zone
+              </button>
+             </div>
+           </div>
+         </div>
        </div>
-     </div>
+      </div>
 
-     <UploadFloorplanModal
-       isOpen={showUploadModal}
-       onClose={() => setShowUploadModal(false)}
-       onUpload={(file) => {
-         console.log('Floor plan uploaded:', file)
-         setShowUploadModal(false)
-       }}
-     />
+      {showUploadModal && (
+        <UploadFloorplanModal
+          isOpen={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          onUpload={(file) => {
+            console.log('Floor plan uploaded:', file)
+            setShowUploadModal(false)
+          }}
+        />
+      )}
 
-     <AddZoneModal
-       isOpen={showAddZoneModal}
-       onClose={() => setShowAddZoneModal(false)}
-       onSave={(data) => {
-         console.log('New zone added:', data)
-         setShowAddZoneModal(false)
-       }}
-     />
-   )
- }
+      {showAddZoneModal && (
+        <AddZoneModal
+          isOpen={showAddZoneModal}
+          onClose={() => setShowAddZoneModal(false)}
+          onSave={(data) => {
+            console.log('New zone added:', data)
+            setShowAddZoneModal(false)
+          }}
+        />
+      )}
+    </div>
+  )
