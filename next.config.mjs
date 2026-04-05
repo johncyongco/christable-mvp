@@ -12,8 +12,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true, // Skip TypeScript errors during build
   },
-  // For Vercel deployment
-  output: 'standalone', // Creates a standalone build for better compatibility
 }
 
 export default nextConfig
