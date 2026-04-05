@@ -14,17 +14,5 @@
   ],
   "env": {
     "NEXT_PUBLIC_APP_URL": "https://christable-mvp.vercel.app"
-  },
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
-  "regions": ["iad1"],
-  "functions": {
-    "app/**/*.ts": {
-      "maxDuration": 10
-    },
-    "api/**/*.ts": {
-      "maxDuration": 10
-    }
   }
 }
