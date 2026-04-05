@@ -4,9 +4,26 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+// Don't initialize Prisma during build time
+let prismaInstance: PrismaClient | undefined
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+export const prisma = globalForPrisma.prisma ?? (() => {
+  // Only create Prisma client if we're not in build mode
+  if (typeof window !== 'undefined' || process.env.NEXT_PHASE === 'phase-production-build') {
+    // Return a mock or throw an error
+    console.warn('Prisma client accessed during build time')
+    return {} as PrismaClient
+  }
+  
+  if (!prismaInstance) {
+    prismaInstance = new PrismaClient()
+  }
+  return prismaInstance
+})()
+
+if (process.env.NODE_ENV !== 'production' && !process.env.NEXT_PHASE) {
+  globalForPrisma.prisma = prisma
+}
 
 // Helper functions for common queries
 
