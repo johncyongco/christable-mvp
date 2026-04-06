@@ -1,35 +1,25 @@
 'use client'
 
 import { useState } from 'react'
+import { type User } from '../../lib/services/dashboard-service'
 
 interface PersonnelDetailsModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (data: any) => void
-  personnel: {
-    id: string
-    name: string
-    role: string
-    team: string
-    email: string
-    phone: string
-    status: 'Available' | 'Busy' | 'Offline'
-    avatar: string
-    zone?: string
-    notes?: string
-  }
+  personnel: User
 }
 
 export default function PersonnelDetailsModal({ isOpen, onClose, onSave, personnel }: PersonnelDetailsModalProps) {
   const [formData, setFormData] = useState({
     name: personnel.name,
-    role: personnel.role,
-    team: personnel.team,
-    email: personnel.email,
-    phone: personnel.phone,
+    role: personnel.role || '',
+    team: personnel.team?.name || '',
+    email: personnel.email || '',
+    phone: personnel.phone || '',
     status: personnel.status,
-    zone: personnel.zone || '',
-    notes: personnel.notes || ''
+    zone: personnel.zone?.name || '',
+    notes: ''
   })
 
   const [isEditing, setIsEditing] = useState(false)
@@ -73,19 +63,19 @@ export default function PersonnelDetailsModal({ isOpen, onClose, onSave, personn
             </div>
 
             <div className="flex items-start gap-6 mb-8">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center text-3xl font-bold text-on-surface">
-                  {personnel.avatar ? (
-                    <img src={personnel.avatar} alt={personnel.name} className="w-full h-full rounded-full object-cover" />
-                  ) : (
-                    <span>{personnel.name.charAt(0)}</span>
-                  )}
-                </div>
-                <div className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-surface-container-lowest ${
-                  personnel.status === 'Available' ? 'bg-success' :
-                  personnel.status === 'Busy' ? 'bg-warning' : 'bg-outline'
-                }`}></div>
-              </div>
+               <div className="relative">
+                 <div className="w-24 h-24 rounded-full bg-surface-container-high flex items-center justify-center text-3xl font-bold text-on-surface">
+                   {personnel.imageUrl ? (
+                     <img src={personnel.imageUrl} alt={personnel.name} className="w-full h-full rounded-full object-cover" />
+                   ) : (
+                     <span>{personnel.name.charAt(0)}</span>
+                   )}
+                 </div>
+                 <div className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-surface-container-lowest ${
+                   personnel.status === 'active' || personnel.status === 'Active' ? 'bg-success' :
+                   personnel.status === 'busy' || personnel.status === 'Busy' ? 'bg-warning' : 'bg-outline'
+                 }`}></div>
+               </div>
 
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-4">
@@ -111,23 +101,23 @@ export default function PersonnelDetailsModal({ isOpen, onClose, onSave, personn
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <p className="text-sm text-on-surface-variant">Team</p>
-                    <p className="font-medium text-on-surface">{personnel.team}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-on-surface-variant">Zone</p>
-                    <p className="font-medium text-on-surface">{personnel.zone || 'Not assigned'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-on-surface-variant">Email</p>
-                    <p className="font-medium text-on-surface">{personnel.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-on-surface-variant">Phone</p>
-                    <p className="font-medium text-on-surface">{personnel.phone}</p>
-                  </div>
+                 <div className="grid grid-cols-2 gap-4 mb-6">
+                   <div>
+                     <p className="text-sm text-on-surface-variant">Team</p>
+                     <p className="font-medium text-on-surface">{personnel.team?.name || 'Not assigned'}</p>
+                   </div>
+                   <div>
+                     <p className="text-sm text-on-surface-variant">Zone</p>
+                     <p className="font-medium text-on-surface">{personnel.zone?.name || 'Not assigned'}</p>
+                   </div>
+                   <div>
+                     <p className="text-sm text-on-surface-variant">Email</p>
+                     <p className="font-medium text-on-surface">{personnel.email || 'Not provided'}</p>
+                   </div>
+                   <div>
+                     <p className="text-sm text-on-surface-variant">Phone</p>
+                     <p className="font-medium text-on-surface">{personnel.phone || 'Not provided'}</p>
+                   </div>
                 </div>
               </div>
             </div>

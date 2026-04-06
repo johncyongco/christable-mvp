@@ -1,24 +1,50 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import EventModal from '@/components/modals/EventModal'
+import EventDetailModal from '@/components/modals/EventDetailModal'
 import PersonnelDirectoryModal from '@/components/modals/PersonnelDirectoryModal'
 import PersonnelDetailsModal from '@/components/modals/PersonnelDetailsModal'
+import DirectMessagesModal from '@/components/modals/DirectMessagesModal'
+import { fetchDashboardData, type User } from '@/lib/services/dashboard-service'
 
 export default function DashboardPage() {
   const router = useRouter()
   const [showActionsDropdown, setShowActionsDropdown] = useState(false)
   const [showEventModal, setShowEventModal] = useState(false)
+  const [showEventDetail, setShowEventDetail] = useState(false)
   const [showPersonnelDirectory, setShowPersonnelDirectory] = useState(false)
   const [showPersonnelDetails, setShowPersonnelDetails] = useState(false)
+  const [showDirectMessages, setShowDirectMessages] = useState(false)
   const [selectedPerson, setSelectedPerson] = useState<any>(null)
+  const [chatRecipient, setChatRecipient] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [dashboardData, setDashboardData] = useState<any>(null)
+  const [activePersonnel, setActivePersonnel] = useState<User[]>([])
   
   const [eventData, setEventData] = useState({
     title: 'Summer Youth Camp 2024',
     description: 'Regional gathering at Pinecrest Reserve. Total of 1,248 participants currently checked in across 12 sectors.',
     backgroundImage: null as string | null
   })
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      setIsLoading(true)
+      try {
+        const data = await fetchDashboardData()
+        setDashboardData(data)
+        setActivePersonnel(data.activePersonnel)
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadDashboardData()
+  }, [])
 
   const handleViewSchedule = () => {
     router.push('/schedule')
@@ -41,7 +67,7 @@ export default function DashboardPage() {
     setShowPersonnelDirectory(true)
   }
 
-  const handlePersonClick = (person: any) => {
+  const handlePersonClick = (person: User) => {
     setSelectedPerson(person)
     setShowPersonnelDetails(true)
   }
@@ -51,38 +77,12 @@ export default function DashboardPage() {
     setShowPersonnelDetails(false)
   }
 
-  const personnel = [
-    {
-      id: '1',
-      name: 'Sarah Chen',
-      role: 'Logistics Lead',
-      team: 'Operations',
-      status: 'Available',
-      phone: '+1 (555) 123-4567',
-      email: 'sarah.c@christable.com',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnYUXgF8Mw8wN6BGxRbjrvwC4UloMpCHxYNw0Ev-vChjsuRHfKDDJqv0bl6_UKuZeufpZMcyOw3TsTt4rC9qxOejwpktKVq0Ros5BhtEvBJVe16ClFJEopkcGE7grhuw8wvlVh9Kxpdq_JSjbd-BynelA-5MnTcysQOddfKdRIcOGDAdbxkn7GrCOC5CwdGWlmSl7_q43T4EQAroOpI4NKQDBUKa_hueT4x8qTfdOmtcnvKuNcNJ-_SlYt9TRKr6ahnXH1NlWLoa4'
-    },
-    {
-      id: '2',
-      name: 'Marcus Jensen',
-      role: 'Medical Officer',
-      team: 'Health & Safety',
-      status: 'Busy',
-      phone: '+1 (555) 234-5678',
-      email: 'm.jensen@christable.com',
-      avatar: null
-    },
-    {
-      id: '3',
-      name: 'Alex Thompson',
-      role: 'Security Lead',
-      team: 'Safety',
-      status: 'Available',
-      phone: '+1 (555) 345-6789',
-      email: 'alex.t@christable.com',
-      avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCUgTAKAS8k5fAzr3e5Bz47-TKPxavIV1IqkxAbR5urFyrsEyqnbNe6K_zI2KJb8rziqiNY-znmL2xNzq-gqNo_c4p9GbbUsGycmg5vcRAe1TQiO9LRenkmhNXgoYY2oLDnn-__-Ec149Rp-_GNj7nnO3n342PBWqqbWebiuiHTJ0m0diP4Wtnc6gTZ1_sz8j9wz6ucxGVeSGc_zXp_JN81R_nq13KXfm48TMSJyuv0_SlOQMX9aAHV2NhE7DeQbiVpXCFijwjd0WU'
-    }
-  ]
+  const handleChatClick = (personName: string) => {
+    setChatRecipient(personName)
+    setShowDirectMessages(true)
+  }
+
+  // Personnel data will come from API
 
   return (
     <>
@@ -113,7 +113,12 @@ export default function DashboardPage() {
               <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
               Event
             </div>
-            <h2 className="text-5xl font-black text-white mb-4 tracking-tight">{eventData.title}</h2>
+             <h2 
+               onClick={() => setShowEventDetail(true)}
+               className="text-5xl font-black text-white mb-4 tracking-tight hover:opacity-90 cursor-pointer transition-opacity"
+             >
+               {eventData.title}
+             </h2>
             <p className="text-indigo-100 text-lg font-medium mb-8 max-w-lg leading-relaxed">
               {eventData.description}
             </p>
@@ -173,7 +178,7 @@ export default function DashboardPage() {
 
       {/* Metric Grid */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Metric Card 1 */}
+        {/* Metric Card 1 - Total People */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -185,10 +190,14 @@ export default function DashboardPage() {
             </span>
           </div>
           <h3 className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total People</h3>
-          <p className="text-3xl font-black text-on-surface">1,248</p>
+          {isLoading ? (
+            <div className="h-10 bg-surface-container-high rounded animate-pulse"></div>
+          ) : (
+            <p className="text-3xl font-black text-on-surface">{dashboardData?.stats?.totalUsers || 0}</p>
+          )}
         </div>
 
-        {/* Metric Card 2 */}
+        {/* Metric Card 2 - Total Teams */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center text-tertiary">
@@ -197,10 +206,14 @@ export default function DashboardPage() {
             <span className="text-slate-400 font-bold text-xs bg-surface-container px-2 py-1 rounded-md">~0%</span>
           </div>
           <h3 className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Total Teams</h3>
-          <p className="text-3xl font-black text-on-surface">42</p>
+          {isLoading ? (
+            <div className="h-10 bg-surface-container-high rounded animate-pulse"></div>
+          ) : (
+            <p className="text-3xl font-black text-on-surface">{dashboardData?.stats?.totalTeams || 0}</p>
+          )}
         </div>
 
-        {/* Metric Card 3 */}
+        {/* Metric Card 3 - Active Schedules */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
@@ -212,10 +225,14 @@ export default function DashboardPage() {
             </span>
           </div>
           <h3 className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Active Schedules</h3>
-          <p className="text-3xl font-black text-on-surface">18</p>
+          {isLoading ? (
+            <div className="h-10 bg-surface-container-high rounded animate-pulse"></div>
+          ) : (
+            <p className="text-3xl font-black text-on-surface">{dashboardData?.stats?.totalSchedules || 0}</p>
+          )}
         </div>
 
-        {/* Metric Card 4 */}
+        {/* Metric Card 4 - On-site Alerts */}
         <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow ring-2 ring-error/10">
           <div className="flex items-center justify-between mb-4">
             <div className="w-10 h-10 rounded-xl bg-error-container flex items-center justify-center text-error">
@@ -224,7 +241,11 @@ export default function DashboardPage() {
             <span className="text-white font-bold text-[10px] bg-error px-2 py-1 rounded-md uppercase animate-pulse">Critical</span>
           </div>
           <h3 className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">On-site Alerts</h3>
-          <p className="text-3xl font-black text-error">2</p>
+          {isLoading ? (
+            <div className="h-10 bg-surface-container-high rounded animate-pulse"></div>
+          ) : (
+            <p className="text-3xl font-black text-error">{dashboardData?.stats?.recentPings || 0}</p>
+          )}
         </div>
       </section>
 
@@ -337,83 +358,69 @@ export default function DashboardPage() {
                <span className="material-symbols-outlined text-lg">chevron_right</span>
              </button>
           </div>
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             {/* Personnel Card 1 */}
-             <div 
-               onClick={() => handlePersonClick(personnel[0])}
-               className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer"
-             >
-               <img 
-                 alt="Sarah Chen" 
-                 className="w-14 h-14 rounded-xl object-cover" 
-                 src={personnel[0].avatar}
-               />
-               <div className="flex-1">
-                 <p className="font-bold text-on-surface">{personnel[0].name}</p>
-                 <p className="text-xs text-on-surface-variant mb-2">{personnel[0].role}</p>
-                 <div className="flex items-center gap-2">
-                   <span className={`w-2 h-2 rounded-full ${
-                     personnel[0].status === 'Available' ? 'bg-success' :
-                     personnel[0].status === 'Busy' ? 'bg-warning' : 'bg-outline'
-                   }`}></span>
-                   <span className="text-[10px] font-bold text-slate-500 uppercase">{personnel[0].status}</span>
-                 </div>
-               </div>
-               <button className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                 <span className="material-symbols-outlined text-sm">chat_bubble</span>
-               </button>
-             </div>
-
-             {/* Personnel Card 2 */}
-             <div 
-               onClick={() => handlePersonClick(personnel[1])}
-               className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer"
-             >
-               <div className="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface">
-                 <span className="text-2xl font-bold">{personnel[1].name.charAt(0)}</span>
-               </div>
-               <div className="flex-1">
-                 <p className="font-bold text-on-surface">{personnel[1].name}</p>
-                 <p className="text-xs text-on-surface-variant mb-2">{personnel[1].role}</p>
-                 <div className="flex items-center gap-2">
-                   <span className={`w-2 h-2 rounded-full ${
-                     personnel[1].status === 'Available' ? 'bg-success' :
-                     personnel[1].status === 'Busy' ? 'bg-warning' : 'bg-outline'
-                   }`}></span>
-                   <span className="text-[10px] font-bold text-slate-500 uppercase">{personnel[1].status}</span>
-                 </div>
-               </div>
-               <button className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                 <span className="material-symbols-outlined text-sm">chat_bubble</span>
-               </button>
-             </div>
-
-             {/* Personnel Card 3 */}
-             <div 
-               onClick={() => handlePersonClick(personnel[2])}
-               className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer"
-             >
-               <img 
-                 alt="Alex Thompson" 
-                 className="w-14 h-14 rounded-xl object-cover" 
-                 src={personnel[2].avatar}
-               />
-               <div className="flex-1">
-                 <p className="font-bold text-on-surface">{personnel[2].name}</p>
-                 <p className="text-xs text-on-surface-variant mb-2">{personnel[2].role}</p>
-                 <div className="flex items-center gap-2">
-                   <span className={`w-2 h-2 rounded-full ${
-                     personnel[2].status === 'Available' ? 'bg-success' :
-                     personnel[2].status === 'Busy' ? 'bg-warning' : 'bg-outline'
-                   }`}></span>
-                   <span className="text-[10px] font-bold text-slate-500 uppercase">{personnel[2].status}</span>
-                 </div>
-               </div>
-               <button className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                 <span className="material-symbols-outlined text-sm">chat_bubble</span>
-               </button>
-             </div>
-           </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {isLoading ? (
+                // Loading skeletons
+                Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 animate-pulse">
+                    <div className="w-14 h-14 rounded-xl bg-surface-container-high"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-surface-container-high rounded w-3/4"></div>
+                      <div className="h-3 bg-surface-container-high rounded w-1/2"></div>
+                      <div className="h-2 bg-surface-container-high rounded w-1/4"></div>
+                    </div>
+                  </div>
+                ))
+              ) : activePersonnel.length > 0 ? (
+                activePersonnel.slice(0, 3).map((person) => (
+                  <div 
+                    key={person.id}
+                    onClick={() => handlePersonClick(person)}
+                    className="bg-surface-container-low p-4 rounded-2xl flex items-center gap-4 hover:bg-surface-container-high transition-colors cursor-pointer"
+                  >
+                    {person.imageUrl ? (
+                      <img 
+                        alt={person.name} 
+                        className="w-14 h-14 rounded-xl object-cover" 
+                        src={person.imageUrl}
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface">
+                        <span className="text-2xl font-bold">{person.name.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <p className="font-bold text-on-surface">{person.name}</p>
+                      <p className="text-xs text-on-surface-variant mb-2">{person.role}</p>
+                      <div className="flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${
+                          person.status === 'active' || person.status === 'Active' ? 'bg-success' :
+                          person.status === 'busy' || person.status === 'Busy' ? 'bg-warning' : 'bg-outline'
+                        }`}></span>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase">
+                          {person.status === 'active' || person.status === 'Active' ? 'Available' : 
+                           person.status === 'busy' || person.status === 'Busy' ? 'Busy' : 'Offline'}
+                        </span>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation() // Prevent triggering the card click
+                        handleChatClick(person.name)
+                      }}
+                      className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-sm">chat_bubble</span>
+                    </button>
+                  </div>
+                ))
+              ) : (
+                // Fallback when no personnel data
+                <div className="col-span-3 text-center py-8 text-on-surface-variant">
+                  No active personnel data available
+                </div>
+              )}
+            </div>
         </div>
       </div>
 
@@ -435,14 +442,49 @@ export default function DashboardPage() {
         />
       )}
 
-      {selectedPerson && showPersonnelDetails && (
+       {selectedPerson && showPersonnelDetails && (
         <PersonnelDetailsModal
           isOpen={showPersonnelDetails}
           onClose={() => setShowPersonnelDetails(false)}
           onSave={handlePersonnelSave}
           personnel={selectedPerson}
         />
-      )}
-    </>
-  )
-}
+       )}
+
+       {showDirectMessages && (
+        <DirectMessagesModal
+          isOpen={showDirectMessages}
+          onClose={() => setShowDirectMessages(false)}
+          onSendMessage={(message, conversationId) => {
+            console.log(`Message to ${chatRecipient}:`, message, 'conversation:', conversationId)
+          }}
+        />
+       )}
+
+       {showEventDetail && (
+        <EventDetailModal
+          isOpen={showEventDetail}
+          onClose={() => setShowEventDetail(false)}
+          onEdit={() => {
+            console.log('Edit event clicked')
+            setShowEventDetail(false)
+            setShowEventModal(true)
+          }}
+          onViewSchedule={handleViewSchedule}
+          event={{
+            id: '1',
+            title: eventData.title,
+            description: eventData.description,
+            date: 'July 15-20, 2024',
+            duration: '6 days',
+            venue: 'Pinecrest Reserve',
+            capacity: 1500,
+            currentParticipants: 1248,
+            status: 'active' as const,
+            backgroundImage: eventData.backgroundImage || undefined
+          }}
+        />
+       )}
+     </>
+   )
+ }

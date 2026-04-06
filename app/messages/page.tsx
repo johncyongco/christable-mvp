@@ -1,9 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import DirectMessagesModal from '@/components/modals/DirectMessagesModal'
+import { useModal } from '@/lib/hooks/useModal'
+
+interface Message {
+  name: string
+  time: string
+  message: string
+  image: string
+  unread: boolean
+  source: string
+  channel: string
+  event?: string
+}
 
 export default function MessagesPage() {
-  const [messages, setMessages] = useState([
+  const directMessageModal = useModal<Message>()
+  const [messages, setMessages] = useState<Message[]>([
     {
       name: 'Sarah Jenkins',
       time: '2m ago',
@@ -91,8 +105,11 @@ export default function MessagesPage() {
             </div>
             
              <div className="space-y-4">
-               {messages.map((msg, index) => (
-                 <div key={index} className="group bg-surface-container-lowest p-5 rounded-xl flex items-start gap-4 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border border-transparent hover:border-outline-variant/10">
+                {messages.map((msg, index) => (
+                  <div 
+                    key={index} 
+                    onClick={() => directMessageModal.openModal(msg)}
+                    className="group bg-surface-container-lowest p-5 rounded-xl flex items-start gap-4 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border border-transparent hover:border-outline-variant/10 cursor-pointer"
                    <div className="relative">
                      <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-primary/20">
                        <img alt={msg.name} className="w-full h-full object-cover" src={msg.image} />
@@ -178,8 +195,18 @@ export default function MessagesPage() {
                </div>
              </div>
            </div>
-         </div>
-      </div>
-    </div>
-  )
-}
+          </div>
+       </div>
+
+       {directMessageModal.isOpen && (
+        <DirectMessagesModal
+          isOpen={directMessageModal.isOpen}
+          onClose={directMessageModal.closeModal}
+          onSendMessage={(message, conversationId) => {
+            console.log('Message sent:', message, 'to conversation:', conversationId)
+          }}
+        />
+       )}
+     </div>
+   )
+ }

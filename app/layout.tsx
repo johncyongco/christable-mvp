@@ -4,6 +4,7 @@ import Sidebar from '@/components/ui/Sidebar'
 import TopNav from '@/components/ui/TopNav'
 import MainContent from '@/components/ui/MainContent'
 import { SidebarProvider } from '@/components/ui/SidebarContext'
+import { ToastContainer } from '@/components/ui/Toast'
 
 export const metadata: Metadata = {
   title: 'Christable | Event Command Dashboard',
@@ -31,7 +32,7 @@ export default function RootLayout({
           }
         `}</style>
       </head>
-      <body className="bg-surface text-on-surface font-body">
+       <body className="bg-surface text-on-surface font-body">
         <SidebarProvider>
           <div className="flex min-h-screen">
             <Sidebar />
@@ -42,6 +43,7 @@ export default function RootLayout({
               </main>
             </MainContent>
           </div>
+          <ToastContainer />
         </SidebarProvider>
       </body>
     </html>

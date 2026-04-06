@@ -1,26 +1,128 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import UploadFloorplanModal from '@/components/modals/UploadFloorplanModal'
 import AddZoneModal from '@/components/modals/AddZoneModal'
+import ZoneDetailModal from '@/components/modals/ZoneDetailModal'
+import { useToast } from '@/lib/hooks/useToast'
+import { useModal } from '@/lib/hooks/useModal'
+
+interface Team {
+  id: string
+  name: string
+  icon: string
+  color: string
+  memberCount: number
+  status: 'active' | 'inactive' | 'overloaded'
+}
+
+interface Zone {
+  id: string
+  name: string
+  location: string
+  capacity: number
+  currentOccupancy: number
+  status: 'active' | 'inactive' | 'maintenance'
+  description?: string
+  teams: Team[]
+  label?: string | null
+  polygonData?: any
+  venueMapId?: string
+  color?: string
+  users?: any[]
+  schedules?: any[]
+  events?: any[]
+}
 
 export default function VenueMapPage() {
+  const { success, error } = useToast()
+  const zoneModal = useModal<Zone>()
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showAddZoneModal, setShowAddZoneModal] = useState(false)
-  const zones = [
-    {
-      name: 'Session Hall',
-      color: 'border-primary'
-    },
-    {
-      name: 'Kitchen',
-      color: 'border-outline-variant/20'
-    },
-    {
-      name: 'Prayer Room',
-      color: 'border-outline-variant/20'
+  const [zones, setZones] = useState<Zone[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  const fetchZones = async () => {
+    try {
+      const response = await fetch('/api/zones')
+      if (!response.ok) throw new Error('Failed to fetch zones')
+      const data = await response.json()
+      if (data.success) {
+        setZones(data.data)
+      }
+    } catch (err) {
+      error('Error', 'Failed to load zone data')
+      console.error('Failed to fetch zones:', err)
     }
-  ]
+  }
+
+  const loadData = async () => {
+    setIsLoading(true)
+    await fetchZones()
+    setIsLoading(false)
+  }
+
+  const refreshData = async () => {
+    setIsRefreshing(true)
+    await fetchZones()
+    setIsRefreshing(false)
+    success('Refreshed', 'Zone data updated')
+  }
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const handleZoneClick = (zone: Zone) => {
+    zoneModal.openModal(zone)
+  }
+
+  const handleAddZoneSave = async (data: any) => {
+    try {
+      const response = await fetch('/api/zones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.ok) throw new Error('Failed to add zone')
+      
+      const result = await response.json()
+      if (result.success) {
+        success('Added', `${data.name} zone added successfully`)
+        await fetchZones() // Refresh the list
+        setShowAddZoneModal(false)
+      }
+    } catch (err) {
+      error('Error', 'Failed to add zone')
+      console.error('Failed to add zone:', err)
+    }
+  }
+
+  const getZoneColor = (index: number) => {
+    const colors = [
+      'border-primary',
+      'border-secondary',
+      'border-tertiary',
+      'border-error',
+      'border-warning',
+      'border-success'
+    ]
+    return colors[index % colors.length]
+  }
+
+  const getZoneBgColor = (index: number) => {
+    const colors = [
+      'bg-primary/10',
+      'bg-secondary/10',
+      'bg-tertiary/10',
+      'bg-error/10',
+      'bg-warning/10',
+      'bg-success/10'
+    ]
+    return colors[index % colors.length]
+  }
 
   return (
     <div className="p-8">
@@ -67,15 +169,58 @@ export default function VenueMapPage() {
             <img alt="Venue Floor Plan" className="w-full h-full object-cover opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz-33EXWuJr-IAeVQ0SCCqSaA0Lv4F4nqYvHDo_NRQB-2z9RUwoFi5VRJUxz40I1FOxsudtqhkVEoewoDs225V2bK0lcrctKkJQ2QVegF3-F9PUbKouw1Z_s7ZKMLoLt_jTaV6pfYyKb7bc2KbXg5GedQGHeUagnOI8L3CwKoFjKpZlOJiN11TFmC_KQXLDkoEaUCfeupSf3shDtjIMXqbOtAys8ympO_ci9iHgOKwmB3z2ihRkMpOZHScVhZRf-4h-BOqH6Y_rAo" />
             
             <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/10 border-2 border-primary/40 rounded-lg backdrop-blur-[2px] pointer-events-auto cursor-pointer hover:bg-primary/20 transition-all flex items-center justify-center">
+              <div 
+                onClick={() => handleZoneClick({ 
+                  id: 'main-stage', 
+                  name: 'Main Stage', 
+                  location: 'Center Stage Area', 
+                  capacity: 5000, 
+                  currentOccupancy: 3200, 
+                  status: 'active' as const,
+                  description: 'Main performance stage with full audio-visual setup',
+                  teams: [
+                    { id: '1', name: 'Tech Support', icon: 'construction', color: 'bg-primary-fixed text-primary', memberCount: 12, status: 'active' },
+                    { id: '2', name: 'Security', icon: 'security', color: 'bg-secondary-fixed text-secondary', memberCount: 8, status: 'active' }
+                  ]
+                })}
+                className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/10 border-2 border-primary/40 rounded-lg backdrop-blur-[2px] pointer-events-auto cursor-pointer hover:bg-primary/20 transition-all flex items-center justify-center"
+              >
                 <span className="text-primary font-bold text-xs uppercase tracking-widest font-headline">Main Stage</span>
               </div>
               
-              <div className="absolute top-1/2 right-1/3 w-40 h-24 bg-secondary/10 border-2 border-secondary/40 rounded-lg backdrop-blur-[2px] pointer-events-auto cursor-pointer hover:bg-secondary/20 transition-all flex items-center justify-center">
+              <div 
+                onClick={() => handleZoneClick({ 
+                  id: 'exhibition-hall-a', 
+                  name: 'Exhibition Hall A', 
+                  location: 'North Wing, Level 2', 
+                  capacity: 2000, 
+                  currentOccupancy: 1500, 
+                  status: 'active' as const,
+                  description: 'Primary exhibition space for vendor booths',
+                  teams: [
+                    { id: '3', name: 'Vendor Support', icon: 'storefront', color: 'bg-tertiary-fixed text-tertiary', memberCount: 6, status: 'active' }
+                  ]
+                })}
+                className="absolute top-1/2 right-1/3 w-40 h-24 bg-secondary/10 border-2 border-secondary/40 rounded-lg backdrop-blur-[2px] pointer-events-auto cursor-pointer hover:bg-secondary/20 transition-all flex items-center justify-center"
+              >
                 <span className="text-secondary font-bold text-xs uppercase tracking-widest font-headline">Exhibition Hall A</span>
               </div>
               
-              <div className="absolute bottom-1/4 left-1/3 w-20 h-20 bg-tertiary/10 border-2 border-tertiary/40 rounded-full backdrop-blur-[2px] pointer-events-auto cursor-pointer hover:bg-tertiary/20 transition-all flex items-center justify-center">
+              <div 
+                onClick={() => handleZoneClick({ 
+                  id: 'cafe', 
+                  name: 'Cafe', 
+                  location: 'West Wing, Ground Floor', 
+                  capacity: 150, 
+                  currentOccupancy: 80, 
+                  status: 'active' as const,
+                  description: 'Coffee shop and refreshment area',
+                  teams: [
+                    { id: '4', name: 'Food Service', icon: 'restaurant', color: 'bg-error-fixed text-error', memberCount: 4, status: 'active' }
+                  ]
+                })}
+                className="absolute bottom-1/4 left-1/3 w-20 h-20 bg-tertiary/10 border-2 border-tertiary/40 rounded-full backdrop-blur-[2px] pointer-events-auto cursor-pointer hover:bg-tertiary/20 transition-all flex items-center justify-center"
+              >
                 <span className="text-tertiary font-bold text-xs uppercase tracking-widest text-center font-headline">Cafe</span>
               </div>
             </div>
@@ -131,15 +276,25 @@ export default function VenueMapPage() {
         />
       )}
 
-      {showAddZoneModal && (
+       {showAddZoneModal && (
         <AddZoneModal
           isOpen={showAddZoneModal}
           onClose={() => setShowAddZoneModal(false)}
-          onSave={(data) => {
-            console.log('New zone added:', data)
-            setShowAddZoneModal(false)
+          onSave={handleAddZoneSave}
+        />
+       )}
+
+       {zoneModal.isOpen && zoneModal.data && (
+        <ZoneDetailModal
+          isOpen={zoneModal.isOpen}
+          onClose={zoneModal.closeModal}
+          zone={zoneModal.data}
+          onManageTeams={() => {
+            console.log('Manage teams for zone:', zoneModal.data?.name)
+            // This would open a team management modal
           }}
         />
-      )}
-    </div>
-  )
+       )}
+     </div>
+   )
+ }
